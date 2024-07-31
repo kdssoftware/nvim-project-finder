@@ -5,3 +5,9 @@ you'll need to, to add your projects
 ```touch $HOME/.dir-list``
 
 you can also edit the `pf`'s basepath
+
+
+## Demo
+
+https://github.com/user-attachments/assets/de4d1645-7657-4ecd-b6ee-d254fb1bb20b
+
