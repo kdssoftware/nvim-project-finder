@@ -1,0 +1,25 @@
+#!/bin/bash
+
+BASEPATH=$HOME/Git # edit this
+TMUX_SESSION=$(tmux display-message -p '#S')
+
+get_filtered_paths() {
+    while IFS= read -r dir; do
+        echo $dir | sed "s|$BASEPATH||"
+    done < "$HOME/.dir_list"
+}
+SELECTED=$(get_filtered_paths | fzf  --with-nth 1 --preview-window down:1 --height 40%)
+
+if [ -n "$SELECTED" ]; then
+    if tmux list-windows -t "$TMUX_SESSION" -F "#{window_name}" | grep -q "^$SELECTED"; then
+        tmux select-window -t "$TMUX_SESSION":"$SELECTED" 
+    else
+        tmux new-window -a -d -c "$BASEPATH$SELECTED" -t "$TMUX_SESSION" -n "$SELECTED"
+        tmux select-window -t "$TMUX_SESSION":"$SELECTED"
+        tmux send-keys -t "$TMUX_SESSION" "nvim ." "Enter" "Space" "p" "v" # this is highly subjective
+        tmux split-window -v -l 20% -t "$TMUX_SESSION" -c "$BASEPATH$SELECTED"
+        tmux select-pane -t "$TMUX_SESSION":"$SELECTED" -U
+    fi
+else
+    echo "No directory selected."
+fi
